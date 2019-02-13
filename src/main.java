@@ -15,7 +15,8 @@ public class main {
 				    while (sc.hasNextLine()) 
 				      System.out.println(sc.nextLine());
 		}catch(IOException e) {
-			System.out.println("error");
+			System.out.println("error, file name is incorrect reRun the program");
+			
 		}
 		System.out.println(fileName);
 	}
