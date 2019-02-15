@@ -1,23 +1,31 @@
+import java.util.ArrayList;
+import java.util.List;
 
 public class Class {
-	String className;
-	int startTime;
+	int classRoomUniqueId;
 	int endTime;
+	List<Lecture> lectureArray;
 	
-	Class(String className,int startTime, int endTime){
-		this.className=className;
-		this.startTime=startTime;
+	
+	Class(int classRoomUniqueId,int endTime){
+		this.classRoomUniqueId=classRoomUniqueId;
+		this.lectureArray  = new ArrayList<Lecture>();
 		this.endTime=endTime;
 	}
 	
-	String getClassName() {
-		return this.className;
+	int getClassRoomID() {
+		return this.classRoomUniqueId;
 	}
-	int getStartTime() {
-		return this.startTime;
-	}
+	
 	int getEndTime() {
 		return this.endTime;
+	}
+	
+	public void addClass() {
+		
+	}
+	public void setEndTime() {
+		
 	}
 
 }
