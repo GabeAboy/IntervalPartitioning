@@ -2,30 +2,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Class {
-	int classRoomUniqueId;
-	int endTime;
-	List<Lecture> lectureArray;
 	
+	private int classId;
+	private List<Lecture> lectureArray = new ArrayList();
 	
-	Class(int classRoomUniqueId,int endTime){
-		this.classRoomUniqueId=classRoomUniqueId;
-		this.lectureArray  = new ArrayList<Lecture>();
-		this.endTime=endTime;
+	Class(int classId){
+		this.classId=classId;
 	}
-	
-	int getClassRoomID() {
-		return this.classRoomUniqueId;
+
+	public void addLecture(Lecture item) {
+		this.lectureArray.add(item);
 	}
-	
-	int getEndTime() {
-		return this.endTime;
+	public int getLastFinishTime() {
+		int max=0;
+		for(Lecture x: this.lectureArray) {
+			if(max<x.getEndTime()) {
+				max=x.getEndTime();
+			}
+		}
+		return max;
 	}
-	
-	public void addClass() {
-		
-	}
-	public void setEndTime() {
-		
+	public void printClasses() {
+		System.out.println("Class Room " + this.classId + " Schedule");
+		for(Lecture x:this.lectureArray) {
+			System.out.println("\t("+ x.getClassName()+","+x.getStartTime()+","+x.getEndTime()+")");
+		}
 	}
 
 }

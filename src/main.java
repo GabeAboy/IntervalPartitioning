@@ -80,33 +80,55 @@ public class main {
         Comparator<Class> ClassEndTimeComparator = new Comparator<Class>() {
             @Override
             public int compare(Class one, Class two) {
-                return one.getEndTime() - two.getEndTime();
+                return one.getLastFinishTime() - two.getLastFinishTime();
             }
         };
         PriorityQueue<Class> ClassPriorityQueue = new PriorityQueue<>(ClassEndTimeComparator);
 
 //    	Sort lectures by start time so s(1)  s(2)  ...  s(n).
 //    	cnew = new Classroom({1}, f(1))) // add a new classroom
-        Lecture n  = lectureArray.remove(0); 
+        Lecture n  = lectureArray.get(0); 
+//        System.out.println(n.getStartTime());
 //    	d 1 // d = number of allocated classrooms
         int classRoom=1;
-        Class defaultInsertion = new Class(classRoom,n.endTime);
+        Class defaultInsertion = new Class(0);
+        defaultInsertion.addLecture(n);
+        
+        
+//        System.out.println("asdasd "+(defaultInsertion.getLastFinishTime()));
 //    	Q.insert(cnew)
         ClassPriorityQueue.add(defaultInsertion);
 
 //    	for j = 2 to n {
-        for(int j = 2; j<lectureArray.size(); j++) {
+        for(int j = 1; j<lectureArray.size(); j++) {
 //    		c  Q.findMin() // c = classroom with the smallest lastFin
         	// If the queue is always sorted by smallest fin time
-        	Class c = ClassPriorityQueue.
-//    		if ( s(j) >= c.lastFin ) // c is compatible with j
-//    		c.Lecs.insert(j)
-//    		Q.increaseKey(c, f(j))
-//    	else
-//    		cnew = new Classroom({j}, f(j)))
-//    		Q.insert(cnew)
-//    		d
+//    		if ( s(j) >= c.lastFin )c is compatible with j
+        	if(lectureArray.get(j).getEndTime() >= ClassPriorityQueue.peek().getLastFinishTime()) {
+//        		c.Lecs.insert(j)
+        		
+        		ClassPriorityQueue.peek().addLecture(lectureArray.get(j));
+//        		Q.increaseKey(c, f(j))
+
+        		
+        	}
+        	else {
+//        		cnew = new Classroom({j}, f(j)))
+        		Class newClassAllocation = new Class(j);
+        		newClassAllocation.addLecture(lectureArray.get(j));
+        		ClassPriorityQueue.add(newClassAllocation);
+//        		Q.insert(cnew)
+//        		d
+        	}
+
 		}
+        System.out.println("About to print classes " + ClassPriorityQueue.size());
+  	  while (!ClassPriorityQueue.isEmpty()) {
+		  
+		  	//lectureArray.add(LecturePriorityQueue.poll());
+  		  Class x = ClassPriorityQueue.poll();
+          x.printClasses();
+        }
     }
     
 }
