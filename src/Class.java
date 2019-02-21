@@ -5,7 +5,7 @@ public class Class {
 	
 	private int classId;
 	private int lastFinTime;
-	private List<Lecture> lectureArray = new ArrayList();
+	private List<Lecture> lectureArray = new ArrayList<Lecture>();
 	
 	Class(int classId){
 		this.classId=classId;

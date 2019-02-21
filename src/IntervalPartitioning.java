@@ -2,7 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class main {
+public class IntervalPartitioning {
 	public static void main(String[] args) {
 
 		// Declare lecture array, use Comparator to run a min heap sort on Lecture start time
@@ -17,6 +17,7 @@ public class main {
         String fileName = ReadUserInput();
 		try {
 			File file = new File(fileName); 
+			@SuppressWarnings("resource")
 			Scanner sc = new Scanner(file); 		  
 		    while (sc.hasNextLine()) {   	
 		    	String newLine = sc.nextLine();	
