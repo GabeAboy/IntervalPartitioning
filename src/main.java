@@ -3,118 +3,83 @@ import java.io.IOException;
 import java.util.*;
 
 public class main {
-
 	public static void main(String[] args) {
-		
- 
-        // Need to do heap sort OR ADD TO A VECTORE
 
-        // New pQueue of classrooms
+		// Declare lecture array, use Comparator to run a min heap sort on Lecture start time
 		List<Lecture> lectureArray = new ArrayList<Lecture>();
-	
 		Comparator<Lecture> LectureStartTimeComparator = new Comparator<Lecture>() {
-            @Override
             public int compare(Lecture one, Lecture two) {
                 return one.getStartTime() - two.getStartTime();
             }
         };
-        PriorityQueue<Lecture> LecturePriorityQueue = new PriorityQueue<>(LectureStartTimeComparator);
-        
-		String fileName = "classSchedule.txt";
-		// Read from file populate pQueue
+        PriorityQueue<Lecture> LecturePriorityQueue = new PriorityQueue<>(LectureStartTimeComparator);     
+		
+        String fileName = ReadUserInput();
 		try {
 			File file = new File(fileName); 
-			Scanner sc = new Scanner(file); 
-				  
-		    while (sc.hasNextLine()) {
-		    	
-		    	String newLine = sc.nextLine();
-		    	
+			Scanner sc = new Scanner(file); 		  
+		    while (sc.hasNextLine()) {   	
+		    	String newLine = sc.nextLine();	
 		    	String className = newLine.substring(1, 2);
 		    	int startTime = Integer.parseInt(newLine.substring(4, 5));
 		    	int endTime = Integer.parseInt(newLine.substring(7, 8));
-		    	LecturePriorityQueue.add(new Lecture(className,startTime,endTime));
-		    	
-		    }
-		      
+		    	LecturePriorityQueue.add(new Lecture(className,startTime,endTime));    	
+		    }      
 		}
 		catch(IOException e) {
-			System.out.println("error, file name is incorrect reRun the program");
-			
+			System.out.println("error, file name is incorrect reRun the program");	
 		}
-		
-		
-		// Start working on priority queue...
-		
-	  // Print PQueue
+		// Run "heap sort" using the priority queue, popping with poll removes the minimum start time lecture
+		// The reason why I did this was to not create my own sort. I could have used array sort with another Comparator.
 	  while (!LecturePriorityQueue.isEmpty()) {
-//		  System.out.println("sdasd");
 		  	lectureArray.add(LecturePriorityQueue.poll());
-            //System.out.println(ClassPriorityQueue.remove().getStartTime());
-        }
-	  IntervalPartitioning(lectureArray);
-	  System.out.println("\n");
-	  PriorityQueueExample();
+      }
+	  
+	  // Execute interval scheduling on the sorted by minimum start time array
+	  PriorityQueue<Class> ClassPriorityQueue = IntervalPartitioning(lectureArray);
+	  
+	  // Print results
+	  System.out.println("About to print " + ClassPriorityQueue.size()+" classes");
+	  while (!ClassPriorityQueue.isEmpty()) {
+		  Class lowestFinishTimeClass = ClassPriorityQueue.poll();
+		  System.out.print("Class last finish time "+lowestFinishTimeClass.getLastFinishTime());
+		  lowestFinishTimeClass.printClasses();
+      }
 	}
-	
-	// String function should read input and return string for java open file
+
+	// TODO this read from file doesn't take into account multiple digit numbers
+	// This is a fault of the implementation, but doesn't not compromise the algorithm results 
     public static String ReadUserInput() {
     	Scanner reader = new Scanner(System.in);
-    	// Default value, that is never used because catch statement
     	String userInput="";
     	System.out.println("Enter your file name: ");
     	try {
-    		// Try to open file here
     		userInput = reader.nextLine();
     		
-    	}catch(InputMismatchException a) {
-    		
+    	}catch(InputMismatchException a) {		
     		System.out.println("Please enter an existing file name");
     		ReadUserInput();
     	}
-    	
     	reader.close();
     	return userInput;
     }
-    public static void PriorityQueueExample() {
-    	PriorityQueue<Class> ClassPriorityQueue = new PriorityQueue<>(5, (a,b) -> a.getLastFinishTime() - b.getLastFinishTime());
-    	 Lecture n  = new Lecture("a",1,5);
-    	 Lecture b  = new Lecture("b",4,9);
-    	 Lecture c  = new Lecture("c",6,7);
-    	 Lecture d  = new Lecture("d",2,4);
-    	 
-    	 Class classOne = new Class(1);
-    	 classOne.addLecture(b);
-    	 classOne.addLecture(n);
-    	 
-    	 Class classTwo = new Class(2);
-    	 classTwo.addLecture(c);
-    	 classTwo.addLecture(d);
-    	 ClassPriorityQueue.add(classTwo);
-    	 ClassPriorityQueue.add(classOne);
-    	 while (!ClassPriorityQueue.isEmpty()) {
-   		  
- 		  	//lectureArray.add(LecturePriorityQueue.poll());
-   		  Class x = ClassPriorityQueue.poll();
-   		  System.out.print("Last fin time "+x.getLastFinishTime());
-           x.printClasses();
-         }
-    }
-    public static void IntervalPartitioning(List<Lecture> lectureArray) {
-
-    	//TODO This comparator class isn't working all the time
-    	
-        PriorityQueue<Class> ClassPriorityQueue = new PriorityQueue<>(5, (a,b) -> a.getLastFinishTime() - b.getLastFinishTime());
-        Lecture n  = lectureArray.get(0); 
-        Class defaultInsertion = new Class(0);
-        defaultInsertion.addLecture(n);
-        ClassPriorityQueue.add(defaultInsertion);
+    
+    // Implementation of Interval Partitioning using the java library priorityQueue, and its Comparator parameter to maintain
+    // a minimumLastFinish time as the head of the queue.
+    public static PriorityQueue<Class> IntervalPartitioning(List<Lecture> lectureArray) {
+    	Comparator<Class> ClassEndTimeComparator = new Comparator<Class>() {
+            public int compare(Class one, Class two) {
+                return one.getLastFinishTime() - two.getLastFinishTime();
+            }
+        };
+        
+        PriorityQueue<Class> ClassPriorityQueue = new PriorityQueue<>(ClassEndTimeComparator);
+        Lecture minStartTimeLecture  = lectureArray.get(0); 
+        Class defaultInsertionClass = new Class(1);
+        defaultInsertionClass.addLecture(minStartTimeLecture);
+        ClassPriorityQueue.add(defaultInsertionClass);
 
         for(int j = 1; j<lectureArray.size(); j++) {
-        	
-//        	int s_j = lectureArray.get(j).getStartTime();
-//        	int classPque = ClassPriorityQueue.peek().getLastFinishTime();
-        	//Remove Class with min lastFinishTime
         	Class lastFinishTimeClass = ClassPriorityQueue.poll();	
         	if(lectureArray.get(j).getStartTime() >= lastFinishTimeClass.getLastFinishTime()) {
         		lastFinishTimeClass.addLecture(lectureArray.get(j));
@@ -122,20 +87,12 @@ public class main {
         	}
         	else {
         		ClassPriorityQueue.add(lastFinishTimeClass);
-        		Class newClassAllocation = new Class(j);
+        		Class newClassAllocation = new Class(j+1);
         		newClassAllocation.addLecture(lectureArray.get(j));
         		ClassPriorityQueue.add(newClassAllocation);
         		ClassPriorityQueue.comparator();
         	}
 		}
-        
-        
-      System.out.println("About to print classes " + ClassPriorityQueue.size());
-  	  while (!ClassPriorityQueue.isEmpty()) {
-  		  Class x = ClassPriorityQueue.poll();
-  		  System.out.print("Last fin time "+x.getLastFinishTime());
-          x.printClasses();
-        }
+        return ClassPriorityQueue;
     }
-    
 }
