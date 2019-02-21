@@ -20,7 +20,7 @@ public class main {
         };
         PriorityQueue<Lecture> LecturePriorityQueue = new PriorityQueue<>(LectureStartTimeComparator);
         
-		String fileName = ReadUserInput();
+		String fileName = "classSchedule.txt";
 		// Read from file populate pQueue
 		try {
 			File file = new File(fileName); 
@@ -53,6 +53,8 @@ public class main {
             //System.out.println(ClassPriorityQueue.remove().getStartTime());
         }
 	  IntervalPartitioning(lectureArray);
+	  System.out.println("\n");
+	  PriorityQueueExample();
 	}
 	
 	// String function should read input and return string for java open file
@@ -74,59 +76,64 @@ public class main {
     	reader.close();
     	return userInput;
     }
+    public static void PriorityQueueExample() {
+    	PriorityQueue<Class> ClassPriorityQueue = new PriorityQueue<>(5, (a,b) -> a.getLastFinishTime() - b.getLastFinishTime());
+    	 Lecture n  = new Lecture("a",1,5);
+    	 Lecture b  = new Lecture("b",4,9);
+    	 Lecture c  = new Lecture("c",6,7);
+    	 Lecture d  = new Lecture("d",2,4);
+    	 
+    	 Class classOne = new Class(1);
+    	 classOne.addLecture(b);
+    	 classOne.addLecture(n);
+    	 
+    	 Class classTwo = new Class(2);
+    	 classTwo.addLecture(c);
+    	 classTwo.addLecture(d);
+    	 ClassPriorityQueue.add(classTwo);
+    	 ClassPriorityQueue.add(classOne);
+    	 while (!ClassPriorityQueue.isEmpty()) {
+   		  
+ 		  	//lectureArray.add(LecturePriorityQueue.poll());
+   		  Class x = ClassPriorityQueue.poll();
+   		  System.out.print("Last fin time "+x.getLastFinishTime());
+           x.printClasses();
+         }
+    }
     public static void IntervalPartitioning(List<Lecture> lectureArray) {
-    	// This lambda is the condition that restructures the pQueue
 
-        Comparator<Class> ClassEndTimeComparator = new Comparator<Class>() {
-            @Override
-            public int compare(Class one, Class two) {
-                return one.getLastFinishTime() - two.getLastFinishTime();
-            }
-        };
-        PriorityQueue<Class> ClassPriorityQueue = new PriorityQueue<>(ClassEndTimeComparator);
-
-//    	Sort lectures by start time so s(1)  s(2)  ...  s(n).
-//    	cnew = new Classroom({1}, f(1))) // add a new classroom
+    	//TODO This comparator class isn't working all the time
+    	
+        PriorityQueue<Class> ClassPriorityQueue = new PriorityQueue<>(5, (a,b) -> a.getLastFinishTime() - b.getLastFinishTime());
         Lecture n  = lectureArray.get(0); 
-//        System.out.println(n.getStartTime());
-//    	d 1 // d = number of allocated classrooms
-        int classRoom=1;
         Class defaultInsertion = new Class(0);
         defaultInsertion.addLecture(n);
-        
-        
-//        System.out.println("asdasd "+(defaultInsertion.getLastFinishTime()));
-//    	Q.insert(cnew)
         ClassPriorityQueue.add(defaultInsertion);
 
-//    	for j = 2 to n {
         for(int j = 1; j<lectureArray.size(); j++) {
-//    		c  Q.findMin() // c = classroom with the smallest lastFin
-        	// If the queue is always sorted by smallest fin time
-//    		if ( s(j) >= c.lastFin )c is compatible with j
-        	if(lectureArray.get(j).getEndTime() >= ClassPriorityQueue.peek().getLastFinishTime()) {
-//        		c.Lecs.insert(j)
-        		
-        		ClassPriorityQueue.peek().addLecture(lectureArray.get(j));
-//        		Q.increaseKey(c, f(j))
-
-        		
+        	
+//        	int s_j = lectureArray.get(j).getStartTime();
+//        	int classPque = ClassPriorityQueue.peek().getLastFinishTime();
+        	//Remove Class with min lastFinishTime
+        	Class lastFinishTimeClass = ClassPriorityQueue.poll();	
+        	if(lectureArray.get(j).getStartTime() >= lastFinishTimeClass.getLastFinishTime()) {
+        		lastFinishTimeClass.addLecture(lectureArray.get(j));
+        		ClassPriorityQueue.add(lastFinishTimeClass);  	
         	}
         	else {
-//        		cnew = new Classroom({j}, f(j)))
+        		ClassPriorityQueue.add(lastFinishTimeClass);
         		Class newClassAllocation = new Class(j);
         		newClassAllocation.addLecture(lectureArray.get(j));
         		ClassPriorityQueue.add(newClassAllocation);
-//        		Q.insert(cnew)
-//        		d
+        		ClassPriorityQueue.comparator();
         	}
-
 		}
-        System.out.println("About to print classes " + ClassPriorityQueue.size());
+        
+        
+      System.out.println("About to print classes " + ClassPriorityQueue.size());
   	  while (!ClassPriorityQueue.isEmpty()) {
-		  
-		  	//lectureArray.add(LecturePriorityQueue.poll());
   		  Class x = ClassPriorityQueue.poll();
+  		  System.out.print("Last fin time "+x.getLastFinishTime());
           x.printClasses();
         }
     }
